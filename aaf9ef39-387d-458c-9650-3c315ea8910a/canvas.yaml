@@ -1,0 +1,686 @@
+id: aaf9ef39-387d-458c-9650-3c315ea8910a
+name: GeoAlpha Tariff Risk Intelligence Terminal
+project_id: 3cebe323-a325-42a4-8a46-43e08ac0cd73
+global_imports: []
+python_global_imports: ''
+r_global_imports: ''
+requirements: []
+linux_packages: []
+environment_variables: []
+is_public: false
+organization_id: a6f6421d-8865-4fe7-aa81-1fc2b3352de7
+layers:
+- blocks:
+  - auto_size: false
+    canvas_id: aaf9ef39-387d-458c-9650-3c315ea8910a
+    compute_settings: null
+    description: Downloads 10-K/10-Q filings from SEC EDGAR for S&P 500 companies,
+      extracts risk factor disclosures, and scores tariff exposure using NLP analysis.
+      Returns dataset with exposure scores, levels, affected regions, and sample quotes
+      per company.
+    height: 1000
+    id: 279c7af2-6be6-4116-ac0e-3ccb7a257eba
+    layer_id: 0a912add-4f75-4a6c-9ee8-e9187157e20b
+    name: edgar_ingestion_pipeline
+    parent_id: null
+    properties: {}
+    status: 3
+    type: 1
+    variables: null
+    width: 1600
+    x: 6000
+    y: 0
+  - auto_size: false
+    canvas_id: aaf9ef39-387d-458c-9650-3c315ea8910a
+    compute_settings: null
+    description: Calculates mispricing gaps between expected vs. actual stock drawdowns
+      based on tariff exposure, geopolitical escalation, and market odds. Classifies
+      stocks as overpriced, underpriced, or fairly-priced and ranks them by misprice
+      magnitude.
+    height: 1000
+    id: 2b5b10c0-6243-4302-a87d-b023c324e8bd
+    layer_id: 0a912add-4f75-4a6c-9ee8-e9187157e20b
+    name: mispricing_gap_analysis
+    parent_id: null
+    properties: {}
+    status: 3
+    type: 1
+    variables: null
+    width: 1600
+    x: 2000
+    y: 12000
+  - auto_size: false
+    canvas_id: aaf9ef39-387d-458c-9650-3c315ea8910a
+    compute_settings: null
+    description: "Creates a PostgreSQL table for storing macroeconomic signals with\
+      \ series metadata, observation dates, values, trend scores, and direction indicators\u2014\
+      ensuring data freshness tracking and preventing duplicate entries."
+    height: 1000
+    id: 36e45354-42d8-409d-a993-a2f6f6965da0
+    layer_id: 0a912add-4f75-4a6c-9ee8-e9187157e20b
+    name: setup_macro_signals_table
+    parent_id: null
+    properties: {}
+    status: 3
+    type: 1
+    variables: null
+    width: 1600
+    x: 0
+    y: 27000
+  - auto_size: false
+    canvas_id: aaf9ef39-387d-458c-9650-3c315ea8910a
+    compute_settings: null
+    description: Establishes PostgreSQL database connection, verifies connectivity
+      and all 7 required tables (companies, stock_prices, escalation_index, etc.),
+      then exposes reusable SQLAlchemy engine for downstream SQL queries and data
+      operations.
+    height: 1000
+    id: 3b22bf0d-4992-4752-9c09-cb7c1d0b7d3a
+    layer_id: 0a912add-4f75-4a6c-9ee8-e9187157e20b
+    name: db_connection
+    parent_id: null
+    properties: {}
+    status: 3
+    type: 1
+    variables: null
+    width: 1600
+    x: 0
+    y: 18000
+  - auto_size: false
+    canvas_id: aaf9ef39-387d-458c-9650-3c315ea8910a
+    compute_settings: null
+    description: Upserting macro signals into PostgreSQL. Recreates the macro_signals
+      table and bulk inserts 139 macroeconomic data points (series ID, observation
+      dates, values, trend scores, direction) with upsert logic to handle duplicates
+      by (series_id, observation_date). Currently fails due to missing source_id constraint
+      mismatch.
+    height: 1000
+    id: 41c891f0-b563-4be6-8746-6b06e0d79d0b
+    layer_id: 0a912add-4f75-4a6c-9ee8-e9187157e20b
+    name: upsert_macro_signals
+    parent_id: null
+    properties: {}
+    status: 3
+    type: 1
+    variables: null
+    width: 1600
+    x: 4000
+    y: 45000
+  - auto_size: false
+    canvas_id: aaf9ef39-387d-458c-9650-3c315ea8910a
+    compute_settings: null
+    description: "Calculates a weighted trade-escalation risk index (0\u20131) by\
+      \ combining 5 signals: trade-deal odds, tariff probability, geopolitical event\
+      \ intensity, import prices, and producer prices. Computes 7-day change trend\
+      \ and stores result in escalation_index table with component breakdown."
+    height: 1000
+    id: 4392f007-2a5c-4db3-8e97-abee6ba2a40b
+    layer_id: 0a912add-4f75-4a6c-9ee8-e9187157e20b
+    name: escalation_index
+    parent_id: null
+    properties: {}
+    status: 3
+    type: 1
+    variables: null
+    width: 1600
+    x: 0
+    y: 36000
+  - auto_size: false
+    canvas_id: aaf9ef39-387d-458c-9650-3c315ea8910a
+    compute_settings: null
+    description: 'Creates three publication-ready visualizations analyzing stock mispricing:
+      (1) bar chart of top 25 most mispriced S&P 500 stocks by gap, (2) scatter plot
+      of expected vs. actual drawdowns to identify market overreactions, and (3) stacked
+      bar chart breaking down mispricing classifications across sectors. Uses Zerve
+      design system styling.'
+    height: 1000
+    id: 4fd71df9-f698-47b4-8ae6-cc26c0451089
+    layer_id: 0a912add-4f75-4a6c-9ee8-e9187157e20b
+    name: mispricing_visualization
+    parent_id: null
+    properties: {}
+    status: 3
+    type: 1
+    variables: null
+    width: 1600
+    x: 4000
+    y: 12000
+  - auto_size: false
+    canvas_id: aaf9ef39-387d-458c-9650-3c315ea8910a
+    compute_settings: null
+    description: Upserts GDELT geopolitical events into a PostgreSQL database, handling
+      deduplication by source_event_id, normalizing fields (severity mapping, float
+      validation, ticker serialization), and verifying insert completeness with severity/country
+      breakdowns.
+    height: 1000
+    id: 5dc88448-c08e-43cd-95ac-7f0cc0569a76
+    layer_id: 0a912add-4f75-4a6c-9ee8-e9187157e20b
+    name: gdelt_db_upsert
+    parent_id: null
+    properties: {}
+    status: 3
+    type: 1
+    variables: null
+    width: 1600
+    x: 2000
+    y: 30000
+  - auto_size: false
+    canvas_id: aaf9ef39-387d-458c-9650-3c315ea8910a
+    compute_settings: null
+    description: Analyzes SEC filings for supply chain risks using Claude API. Extracts
+      supplier dependencies, tariff-exposed products, geographic risk concentrations,
+      and mitigation strategies per company. Stores structured intelligence in database
+      for equity research.
+    height: 1000
+    id: 5def4c37-7822-412f-b2eb-0966beaeb9d7
+    layer_id: 0a912add-4f75-4a6c-9ee8-e9187157e20b
+    name: supply_chain_analyzer
+    parent_id: null
+    properties: {}
+    status: 4
+    type: 1
+    variables: null
+    width: 1600
+    x: 2000
+    y: 48000
+  - auto_size: false
+    canvas_id: aaf9ef39-387d-458c-9650-3c315ea8910a
+    compute_settings: null
+    description: Upserts tariff exposure data for S&P 500 companies into a PostgreSQL
+      database. Creates required schema, ensures unique ticker constraint, builds
+      indexes, and batch-inserts/updates company records with exposure scores, filing
+      info, and regional risk data. Displays verification stats on insertion completeness.
+    height: 1000
+    id: 63629977-d1b0-4053-9a52-f084bb3f6880
+    layer_id: 0a912add-4f75-4a6c-9ee8-e9187157e20b
+    name: db_upsert
+    parent_id: null
+    properties: {}
+    status: 3
+    type: 1
+    variables: null
+    width: 1600
+    x: 8000
+    y: 0
+  - auto_size: false
+    canvas_id: aaf9ef39-387d-458c-9650-3c315ea8910a
+    compute_settings: null
+    description: Fetches daily OHLCV stock price data from Alpha Vantage API for multiple
+      tickers, computes Liberation Day (April 2, 2026) price deltas and market reaction
+      scores, then upserts records to PostgreSQL with conflict handling on source_id.
+    height: 1000
+    id: 6d1e429b-7448-48fc-a904-d53a4fe48c22
+    layer_id: 0a912add-4f75-4a6c-9ee8-e9187157e20b
+    name: ingest_stock_prices
+    parent_id: null
+    properties: {}
+    status: 3
+    type: 1
+    variables: null
+    width: 1600
+    x: 2000
+    y: 39000
+  - auto_size: false
+    canvas_id: aaf9ef39-387d-458c-9650-3c315ea8910a
+    compute_settings: null
+    description: Fetches trade-war and tariff prediction markets from Polymarket Gamma
+      API using tag and keyword-based queries, filters for relevance, and structures
+      data with pricing, volume, sector tags, and market status.
+    height: 1000
+    id: 72740c1c-ba81-490d-a5ae-d4ead8197fa2
+    layer_id: 0a912add-4f75-4a6c-9ee8-e9187157e20b
+    name: fetch_polymarket
+    parent_id: null
+    properties: {}
+    status: 3
+    type: 1
+    variables: null
+    width: 1600
+    x: 2000
+    y: 15000
+  - auto_size: false
+    canvas_id: aaf9ef39-387d-458c-9650-3c315ea8910a
+    compute_settings: null
+    description: Creates a stock_prices table with OHLC data, volume, dividends, and
+      market metrics. Returns row count to verify table existence.
+    height: 1000
+    id: 7947e06f-11b2-4321-9a76-654f805571d6
+    layer_id: 0a912add-4f75-4a6c-9ee8-e9187157e20b
+    name: ensure_stock_prices_table
+    parent_id: null
+    properties:
+      connection_id: 34f4c2f5-4c48-4f45-8977-c96f6d313246
+      input_dataframe: false
+      output_variable: stock_prices_init
+    status: 3
+    type: 3
+    variables: null
+    width: 1600
+    x: 0
+    y: 39000
+  - auto_size: false
+    canvas_id: aaf9ef39-387d-458c-9650-3c315ea8910a
+    compute_settings: null
+    description: Calculates rolling trend signals for macroeconomic series using 6-period
+      OLS slope, normalized by mean absolute value. Classifies each observation as
+      "up", "down", or "flat" based on threshold.
+    height: 1000
+    id: 7eb22172-de78-4de6-88c0-601711b1e341
+    layer_id: 0a912add-4f75-4a6c-9ee8-e9187157e20b
+    name: compute_trend_signals
+    parent_id: null
+    properties: {}
+    status: 3
+    type: 1
+    variables: null
+    width: 1600
+    x: 2000
+    y: 45000
+  - auto_size: false
+    canvas_id: aaf9ef39-387d-458c-9650-3c315ea8910a
+    compute_settings: null
+    description: Fetches S&P 500 company data (tickers, names, sectors) from Wikipedia
+      or SEC EDGAR with fallback to a curated list of 100+ major companies. Returns
+      DataFrame organized by sector and sub-sector.
+    height: 1000
+    id: 86fc4345-ddae-4e23-ad2e-c7998043c2ae
+    layer_id: 0a912add-4f75-4a6c-9ee8-e9187157e20b
+    name: sp500_tickers
+    parent_id: null
+    properties: {}
+    status: 3
+    type: 1
+    variables: null
+    width: 1600
+    x: 0
+    y: 0
+  - auto_size: false
+    canvas_id: aaf9ef39-387d-458c-9650-3c315ea8910a
+    compute_settings: null
+    description: Generates mock datasets for S&P 500 stocks with tariff exposure metrics,
+      market reaction data, and prediction market odds to simulate geopolitical impact
+      analysis.
+    height: 1000
+    id: 8a49bb28-de7d-476d-8060-dd3426c6906c
+    layer_id: 0a912add-4f75-4a6c-9ee8-e9187157e20b
+    name: mock_data
+    parent_id: null
+    properties: {}
+    status: 3
+    type: 1
+    variables: null
+    width: 1600
+    x: 0
+    y: 12000
+  - auto_size: false
+    canvas_id: aaf9ef39-387d-458c-9650-3c315ea8910a
+    compute_settings: null
+    description: Setup guide for a daily scheduled pipeline that orchestrates 8 data
+      ingestion stages (EDGAR, Alpha Vantage, FRED, GDELT, prediction markets, escalation
+      index, misprice analysis, and ML inference) with idempotent upserts. Includes
+      API endpoints for manual runs, health checks, and runtime schedule adjustments
+      via cron expressions.
+    height: 1000
+    id: 8d55bcab-b9f3-4d36-87be-961a9ff68ce1
+    layer_id: 0a912add-4f75-4a6c-9ee8-e9187157e20b
+    name: "Pipeline Scheduler \u2014 Setup Guide"
+    parent_id: null
+    properties: {}
+    status: 1
+    type: 4
+    variables: null
+    width: 1600
+    x: 0
+    y: 51000
+  - auto_size: false
+    canvas_id: aaf9ef39-387d-458c-9650-3c315ea8910a
+    compute_settings: null
+    description: 'Generates three publication-ready visualizations with dark theme:
+      (1) pre-event escalation trajectories, (2) actual vs. predicted sector returns
+      by event, and (3) hit rate and magnitude error scorecards. Displays overall
+      model accuracy metrics.'
+    height: 1000
+    id: 981957ca-56f2-42c2-bf62-5dabf62deafb
+    layer_id: 0a912add-4f75-4a6c-9ee8-e9187157e20b
+    name: backtest_visualization
+    parent_id: null
+    properties: {}
+    status: 3
+    type: 1
+    variables: null
+    width: 1600
+    x: 4000
+    y: 9000
+  - auto_size: false
+    canvas_id: aaf9ef39-387d-458c-9650-3c315ea8910a
+    compute_settings: null
+    description: Backtests a trading strategy that predicts sector returns based on
+      pre-event market escalation patterns. Parses event trajectory data, calculates
+      escalation metrics (slope, mean, start/end values), and measures prediction
+      accuracy against actual post-event returns using a sensitivity-weighted model.
+    height: 1000
+    id: 9ec14481-e3cc-4a8c-8277-c964984badf6
+    layer_id: 0a912add-4f75-4a6c-9ee8-e9187157e20b
+    name: backtest_engine
+    parent_id: null
+    properties: {}
+    status: 3
+    type: 1
+    variables: null
+    width: 1600
+    x: 2000
+    y: 9000
+  - auto_size: false
+    canvas_id: aaf9ef39-387d-458c-9650-3c315ea8910a
+    compute_settings: null
+    description: "Tariff Exposure Scoring Engine \u2013 Analyzes risk disclosure text\
+      \ using weighted keyword taxonomy (tariff terms, trade conflicts, geopolitical\
+      \ factors) to assign 0-100 exposure scores, classify risk levels (low/medium/high/critical),\
+      \ extract key quotes, and map affected regions."
+    height: 1000
+    id: a282d3bf-7ee9-4f63-9c1d-c6e0d5d761e0
+    layer_id: 0a912add-4f75-4a6c-9ee8-e9187157e20b
+    name: tariff_scoring_engine
+    parent_id: null
+    properties: {}
+    status: 3
+    type: 1
+    variables: null
+    width: 1600
+    x: 4000
+    y: 0
+  - auto_size: false
+    canvas_id: aaf9ef39-387d-458c-9650-3c315ea8910a
+    compute_settings: null
+    description: Fetches 24 months of historical economic data from FRED API (inflation,
+      employment, trade) and consolidates into a clean DataFrame with observation
+      counts and latest values.
+    height: 1000
+    id: a4b1cb5e-e8f7-4a8c-9e02-89f1493e34ef
+    layer_id: 0a912add-4f75-4a6c-9ee8-e9187157e20b
+    name: fetch_fred_signals
+    parent_id: null
+    properties: {}
+    status: 3
+    type: 1
+    variables: null
+    width: 1600
+    x: 0
+    y: 45000
+  - auto_size: false
+    canvas_id: aaf9ef39-387d-458c-9650-3c315ea8910a
+    compute_settings: null
+    description: Retrieves high and critical tariff exposure companies with filing
+      insights, ranked by risk score. Returns company IDs, tickers, exposure levels,
+      percentage maps, and key filing quotes for analysis.
+    height: 1000
+    id: ab4534ae-ef16-46a4-8d80-0211e4fc7114
+    layer_id: 0a912add-4f75-4a6c-9ee8-e9187157e20b
+    name: fetch_high_exposure_companies
+    parent_id: null
+    properties:
+      connection_id: 34f4c2f5-4c48-4f45-8977-c96f6d313246
+      input_dataframe: false
+      output_variable: companies_df
+    status: 3
+    type: 3
+    variables: null
+    width: 1600
+    x: 0
+    y: 48000
+  - auto_size: false
+    canvas_id: aaf9ef39-387d-458c-9650-3c315ea8910a
+    compute_settings: null
+    description: Fetches trade war & tariff news articles from GDELT API, maps geopolitical
+      entities to affected stock tickers (SPY, FXI, EZU, etc.), calculates sentiment/severity
+      scores, and returns structured event records with headlines, countries, Goldstein
+      scales, and affected assets for market impact analysis.
+    height: 1000
+    id: b2e505f1-548f-4968-8895-ef29b17895ea
+    layer_id: 0a912add-4f75-4a6c-9ee8-e9187157e20b
+    name: gdelt_fetch_events
+    parent_id: null
+    properties: {}
+    status: 3
+    type: 1
+    variables: null
+    width: 1600
+    x: 0
+    y: 30000
+  - auto_size: false
+    canvas_id: aaf9ef39-387d-458c-9650-3c315ea8910a
+    compute_settings: null
+    description: Retrieves a list of all companies with their ticker symbol, name,
+      sector, and sub-sector classification, sorted alphabetically by ticker.
+    height: 1000
+    id: bb42902c-eaa0-4179-8800-9ae5d7fe078d
+    layer_id: 0a912add-4f75-4a6c-9ee8-e9187157e20b
+    name: fetch_companies
+    parent_id: null
+    properties:
+      connection_id: 34f4c2f5-4c48-4f45-8977-c96f6d313246
+      input_dataframe: false
+      output_variable: companies_df
+    status: 3
+    type: 3
+    variables: null
+    width: 1600
+    x: 0
+    y: 24000
+  - auto_size: false
+    canvas_id: aaf9ef39-387d-458c-9650-3c315ea8910a
+    compute_settings: null
+    description: Retrieves backtest event data including event details, dates, types,
+      pre/post trajectories, and sector returns ordered chronologically.
+    height: 1000
+    id: bee6f413-8f0d-4f65-bc09-a8846451cdf6
+    layer_id: 0a912add-4f75-4a6c-9ee8-e9187157e20b
+    name: load_backtest_data
+    parent_id: null
+    properties:
+      connection_id: 34f4c2f5-4c48-4f45-8977-c96f6d313246
+      input_dataframe: false
+      output_variable: backtest_raw
+    status: 3
+    type: 3
+    variables: null
+    width: 1600
+    x: 0
+    y: 9000
+  - auto_size: false
+    canvas_id: aaf9ef39-387d-458c-9650-3c315ea8910a
+    compute_settings: null
+    description: Synthesizes 30-day escalation index trends, 7-day GDELT event feeds,
+      and prediction market odds into composite narratives for geopolitical risk trajectory
+      inference via NLP models.
+    height: 1000
+    id: d5fafec7-f233-49a6-894c-82e6126fd106
+    layer_id: 0a912add-4f75-4a6c-9ee8-e9187157e20b
+    name: data_preparation
+    parent_id: null
+    properties: {}
+    status: 3
+    type: 1
+    variables: null
+    width: 1600
+    x: 0
+    y: 24000
+  - auto_size: false
+    canvas_id: aaf9ef39-387d-458c-9650-3c315ea8910a
+    compute_settings: null
+    description: 'Defines utility functions to fetch and parse SEC EDGAR filings:
+      resolves ticker symbols to CIK numbers, retrieves latest 10-K/10-Q filing metadata,
+      downloads raw filing documents, and extracts cleaned Risk Factors section text
+      from HTML.'
+    height: 1000
+    id: d84bbaac-210a-4976-b637-8bff19e6d7cf
+    layer_id: 0a912add-4f75-4a6c-9ee8-e9187157e20b
+    name: edgar_filing_fetcher
+    parent_id: null
+    properties: {}
+    status: 3
+    type: 1
+    variables: null
+    width: 1600
+    x: 2000
+    y: 0
+  - auto_size: false
+    canvas_id: aaf9ef39-387d-458c-9650-3c315ea8910a
+    compute_settings: null
+    description: 'Creates three styled geopolitical risk forecast visualizations:
+      ensemble probability bars showing prediction confidence across risk trajectories,
+      signal contribution breakdown comparing NLP, quantitative, and market data sources,
+      and a 30-day escalation index trend with 7-day forecast window highlight.'
+    height: 1000
+    id: e8250f41-2fa8-485b-9349-9289fc8978ef
+    layer_id: 0a912add-4f75-4a6c-9ee8-e9187157e20b
+    name: prediction_visualization
+    parent_id: null
+    properties: {}
+    status: 3
+    type: 1
+    variables: null
+    width: 1600
+    x: 4000
+    y: 24000
+  - auto_size: false
+    canvas_id: aaf9ef39-387d-458c-9650-3c315ea8910a
+    compute_settings: null
+    description: "Sets up a PostgreSQL prediction_markets table with columns for market\
+      \ data (price, volume, expiry) and tags (sectors, tickers) stored as JSONB,\
+      \ then creates GIN indexes for efficient querying. Note: Last run failed\u2014\
+      column reference error suggests schema mismatch."
+    height: 1000
+    id: e91c1e97-8f1c-46cd-abf9-807c07a10be3
+    layer_id: 0a912add-4f75-4a6c-9ee8-e9187157e20b
+    name: setup_db
+    parent_id: null
+    properties: {}
+    status: 3
+    type: 1
+    variables: null
+    width: 1600
+    x: 0
+    y: 15000
+  - auto_size: false
+    canvas_id: aaf9ef39-387d-458c-9650-3c315ea8910a
+    compute_settings: null
+    description: Ensemble geopolitical risk forecaster that predicts 7-day conflict
+      trajectory (rising/stable/de-escalating) by fusing NLP keyword sentiment analysis,
+      quantitative escalation-index trends, and prediction market odds with configurable
+      weights. Outputs probability scores and audit logs.
+    height: 1000
+    id: f16cff85-ab3a-4f82-9654-bfdd7caa1e75
+    layer_id: 0a912add-4f75-4a6c-9ee8-e9187157e20b
+    name: geopolitical_risk_model
+    parent_id: null
+    properties: {}
+    status: 3
+    type: 1
+    variables: null
+    width: 1600
+    x: 2000
+    y: 24000
+  canvas_id: aaf9ef39-387d-458c-9650-3c315ea8910a
+  edges:
+  - canvas_id: aaf9ef39-387d-458c-9650-3c315ea8910a
+    id: 01ecc484-99ff-47ac-9386-4f35c17bba21
+    layer_id: 0a912add-4f75-4a6c-9ee8-e9187157e20b
+    source: bb42902c-eaa0-4179-8800-9ae5d7fe078d
+    target: 6d1e429b-7448-48fc-a904-d53a4fe48c22
+  - canvas_id: aaf9ef39-387d-458c-9650-3c315ea8910a
+    id: 0fa7d26b-d820-4a36-810e-f63d10c9149f
+    layer_id: 0a912add-4f75-4a6c-9ee8-e9187157e20b
+    source: f16cff85-ab3a-4f82-9654-bfdd7caa1e75
+    target: e8250f41-2fa8-485b-9349-9289fc8978ef
+  - canvas_id: aaf9ef39-387d-458c-9650-3c315ea8910a
+    id: 344e5392-f055-4539-b31d-96b534a79374
+    layer_id: 0a912add-4f75-4a6c-9ee8-e9187157e20b
+    source: 8a49bb28-de7d-476d-8060-dd3426c6906c
+    target: 2b5b10c0-6243-4302-a87d-b023c324e8bd
+  - canvas_id: aaf9ef39-387d-458c-9650-3c315ea8910a
+    id: 4178f162-4773-4d9c-a8d1-45051f25df41
+    layer_id: 0a912add-4f75-4a6c-9ee8-e9187157e20b
+    source: 7947e06f-11b2-4321-9a76-654f805571d6
+    target: 6d1e429b-7448-48fc-a904-d53a4fe48c22
+  - canvas_id: aaf9ef39-387d-458c-9650-3c315ea8910a
+    id: 632c0cae-2542-4e02-854e-50c066caef3e
+    layer_id: 0a912add-4f75-4a6c-9ee8-e9187157e20b
+    source: d5fafec7-f233-49a6-894c-82e6126fd106
+    target: f16cff85-ab3a-4f82-9654-bfdd7caa1e75
+  - canvas_id: aaf9ef39-387d-458c-9650-3c315ea8910a
+    id: 65eaf8f4-c7ac-494d-a902-83d9ef3b1313
+    layer_id: 0a912add-4f75-4a6c-9ee8-e9187157e20b
+    source: a282d3bf-7ee9-4f63-9c1d-c6e0d5d761e0
+    target: 279c7af2-6be6-4116-ac0e-3ccb7a257eba
+  - canvas_id: aaf9ef39-387d-458c-9650-3c315ea8910a
+    id: 6cc583a1-f12e-408c-a683-094e77c95097
+    layer_id: 0a912add-4f75-4a6c-9ee8-e9187157e20b
+    source: 7eb22172-de78-4de6-88c0-601711b1e341
+    target: 41c891f0-b563-4be6-8746-6b06e0d79d0b
+  - canvas_id: aaf9ef39-387d-458c-9650-3c315ea8910a
+    id: 78fde89b-3548-460d-81dd-7e7cf123ae4a
+    layer_id: 0a912add-4f75-4a6c-9ee8-e9187157e20b
+    source: 9ec14481-e3cc-4a8c-8277-c964984badf6
+    target: 981957ca-56f2-42c2-bf62-5dabf62deafb
+  - canvas_id: aaf9ef39-387d-458c-9650-3c315ea8910a
+    id: 9edadd7d-7766-4fa3-8595-4186a0682225
+    layer_id: 0a912add-4f75-4a6c-9ee8-e9187157e20b
+    source: 2b5b10c0-6243-4302-a87d-b023c324e8bd
+    target: 4fd71df9-f698-47b4-8ae6-cc26c0451089
+  - canvas_id: aaf9ef39-387d-458c-9650-3c315ea8910a
+    id: a1cfe14f-8b92-43c4-b08f-f7441d5a6b7e
+    layer_id: 0a912add-4f75-4a6c-9ee8-e9187157e20b
+    source: d84bbaac-210a-4976-b637-8bff19e6d7cf
+    target: a282d3bf-7ee9-4f63-9c1d-c6e0d5d761e0
+  - canvas_id: aaf9ef39-387d-458c-9650-3c315ea8910a
+    id: cdd6783c-cec0-4bff-9649-b4c5e69ec94e
+    layer_id: 0a912add-4f75-4a6c-9ee8-e9187157e20b
+    source: bee6f413-8f0d-4f65-bc09-a8846451cdf6
+    target: 9ec14481-e3cc-4a8c-8277-c964984badf6
+  - canvas_id: aaf9ef39-387d-458c-9650-3c315ea8910a
+    id: d388dcfd-22d0-4929-82bf-4f0efb8cc9ce
+    layer_id: 0a912add-4f75-4a6c-9ee8-e9187157e20b
+    source: 86fc4345-ddae-4e23-ad2e-c7998043c2ae
+    target: d84bbaac-210a-4976-b637-8bff19e6d7cf
+  - canvas_id: aaf9ef39-387d-458c-9650-3c315ea8910a
+    id: d73e6f77-2707-415f-929e-a8d4e848332a
+    layer_id: 0a912add-4f75-4a6c-9ee8-e9187157e20b
+    source: b2e505f1-548f-4968-8895-ef29b17895ea
+    target: 5dc88448-c08e-43cd-95ac-7f0cc0569a76
+  - canvas_id: aaf9ef39-387d-458c-9650-3c315ea8910a
+    id: d963671f-cf41-414d-9cad-0e9b05ef8865
+    layer_id: 0a912add-4f75-4a6c-9ee8-e9187157e20b
+    source: e91c1e97-8f1c-46cd-abf9-807c07a10be3
+    target: 72740c1c-ba81-490d-a5ae-d4ead8197fa2
+  - canvas_id: aaf9ef39-387d-458c-9650-3c315ea8910a
+    id: e54c0f8b-2932-472b-be02-62eaf00c283d
+    layer_id: 0a912add-4f75-4a6c-9ee8-e9187157e20b
+    source: 279c7af2-6be6-4116-ac0e-3ccb7a257eba
+    target: 63629977-d1b0-4053-9a52-f084bb3f6880
+  - canvas_id: aaf9ef39-387d-458c-9650-3c315ea8910a
+    id: e840b8cf-7d5e-43c2-a70d-4d13ac45626e
+    layer_id: 0a912add-4f75-4a6c-9ee8-e9187157e20b
+    source: a4b1cb5e-e8f7-4a8c-9e02-89f1493e34ef
+    target: 7eb22172-de78-4de6-88c0-601711b1e341
+  - canvas_id: aaf9ef39-387d-458c-9650-3c315ea8910a
+    id: fe9b627c-9490-4dec-9f53-89bcdfbde9dd
+    layer_id: 0a912add-4f75-4a6c-9ee8-e9187157e20b
+    source: ab4534ae-ef16-46a4-8d80-0211e4fc7114
+    target: 5def4c37-7822-412f-b2eb-0966beaeb9d7
+  id: 0a912add-4f75-4a6c-9ee8-e9187157e20b
+  name: GeoAlpha Tariff Risk Intelligence Terminal
+  type: 1
+assets:
+- id: 98903ce2-c88d-4c0d-bada-6a05b0984864
+  name: FRED_API_KEY
+  type: constant
+- id: 6f9bef1f-a4f1-4690-acea-2a323cb0326e
+  name: ALPHA_VANTAGE_API_KEY
+  type: constant
+- id: 39777ff2-8788-46e8-ab8a-46d414dcdc1b
+  name: DATABASE_URL
+  type: constant
+- id: 34f4c2f5-4c48-4f45-8977-c96f6d313246
+  name: Neon_Database
+  type: connection

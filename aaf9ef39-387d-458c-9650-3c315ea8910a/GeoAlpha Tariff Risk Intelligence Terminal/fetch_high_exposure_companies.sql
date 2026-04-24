@@ -1,0 +1,1 @@
+SELECT id, ticker, key_filing_quote, exposure_pct_map, exposure_level, tariff_exposure_score FROM companies WHERE exposure_level IN ('high', 'critical') AND key_filing_quote IS NOT NULL AND key_filing_quote != '' ORDER BY tariff_exposure_score DESC NULLS LAST;

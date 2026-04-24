@@ -1,0 +1,84 @@
+id: 0622553c-6d58-485d-aa5b-7261fa152c67
+name: GeoBeta (Copy - 20260420230844)
+project_id: 48d8d8e0-70be-4c6f-ab7f-5459f384accf
+global_imports: []
+python_global_imports: ''
+r_global_imports: ''
+requirements: []
+linux_packages: []
+environment_variables: []
+is_public: false
+organization_id: a6f6421d-8865-4fe7-aa81-1fc2b3352de7
+layers:
+- blocks:
+  - auto_size: false
+    canvas_id: 0622553c-6d58-485d-aa5b-7261fa152c67
+    compute_settings: null
+    description: Loads the Neon Database configuration asset and inspects its structure
+      by displaying keys and contents for verification.
+    height: 1000
+    id: 5f7e8a32-4e24-48f6-8110-d1661271d4ac
+    layer_id: 55bd7ae0-dd58-4ca3-816e-af7fd7759320
+    name: load_neon_config
+    parent_id: null
+    properties: {}
+    status: 1
+    type: 1
+    variables: null
+    width: 1600
+    x: 0
+    y: 0
+  - auto_size: false
+    canvas_id: 0622553c-6d58-485d-aa5b-7261fa152c67
+    compute_settings: null
+    description: Imports a utility function from the Development module to check if
+      a file exists in a repository.
+    height: 1000
+    id: 657f3760-2bed-49ac-8043-b8a93532adcc
+    layer_id: 55bd7ae0-dd58-4ca3-816e-af7fd7759320
+    name: check_file_in_repo
+    parent_id: null
+    properties: {}
+    status: 4
+    type: 1
+    variables: null
+    width: 1600
+    x: 0
+    y: 1000
+  - auto_size: false
+    canvas_id: 0622553c-6d58-485d-aa5b-7261fa152c67
+    compute_settings: null
+    description: Connects to a Neon PostgreSQL database and retrieves a catalog of
+      all schemas and tables, excluding system schemas. Displays results in a human-readable
+      format.
+    height: 1000
+    id: 75e9bd56-6f5a-4399-8dd4-72699bc4623b
+    layer_id: 55bd7ae0-dd58-4ca3-816e-af7fd7759320
+    name: neon_db_schema_explorer
+    parent_id: null
+    properties: {}
+    status: 1
+    type: 1
+    variables: null
+    width: 1600
+    x: 0
+    y: 500
+  canvas_id: 0622553c-6d58-485d-aa5b-7261fa152c67
+  edges:
+  - canvas_id: 0622553c-6d58-485d-aa5b-7261fa152c67
+    id: 58d8c416-346a-46ce-bb4c-24b411a10dad
+    layer_id: 55bd7ae0-dd58-4ca3-816e-af7fd7759320
+    source: 75e9bd56-6f5a-4399-8dd4-72699bc4623b
+    target: 657f3760-2bed-49ac-8043-b8a93532adcc
+  - canvas_id: 0622553c-6d58-485d-aa5b-7261fa152c67
+    id: 8df85807-d498-4d32-b0f4-32b15d25ef55
+    layer_id: 55bd7ae0-dd58-4ca3-816e-af7fd7759320
+    source: 5f7e8a32-4e24-48f6-8110-d1661271d4ac
+    target: 75e9bd56-6f5a-4399-8dd4-72699bc4623b
+  id: 55bd7ae0-dd58-4ca3-816e-af7fd7759320
+  name: Development
+  type: 1
+assets:
+- id: 34f4c2f5-4c48-4f45-8977-c96f6d313246
+  name: Neon_Database
+  type: connection
