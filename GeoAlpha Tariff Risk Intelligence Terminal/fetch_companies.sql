@@ -1,0 +1,1 @@
+SELECT ticker, company_name, sector, sub_sector FROM companies ORDER BY ticker
